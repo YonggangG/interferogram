@@ -1,0 +1,11 @@
+numpy
+scipy
+scikit-image
+opencv-python-headless
+matplotlib
+pandas
+pillow
+fastapi
+uvicorn
+jinja2
+python-multipart
