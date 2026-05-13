@@ -102,25 +102,6 @@ Open:
 http://SERVER_IP:8000/docs
 ```
 
-### Source and release fallback
-
-GitHub Releases provide the source archive for each version. Large Docker image archives are not attached as Release assets; use GHCR for prebuilt images, or build from source when GHCR is unavailable.
-
-Release page:
-
-```text
-https://github.com/YonggangG/interferogram/releases/tag/v0.1.1
-```
-
-To build from GitHub source:
-
-```bash
-git clone https://github.com/YonggangG/interferogram.git
-cd interferogram
-docker build --network=host -t interferogram-flatness:0.1.1 .
-docker run --rm -p 8000:8000 interferogram-flatness:0.1.1
-```
-
 
 ---
 

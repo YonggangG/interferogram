@@ -267,25 +267,6 @@ docker run -d \
   ghcr.io/yonggangg/interferogram:latest
 ```
 
-### 源码和 Release 兜底方式
-
-GitHub Release 提供每个版本的源码归档。较大的 Docker 镜像压缩包不再作为 Release asset 上传；预构建镜像请使用 GHCR，如果不能拉取 GHCR，则从源码本地构建。
-
-Release 页面：
-
-```text
-https://github.com/YonggangG/interferogram/releases/tag/v0.1.1
-```
-
-从 GitHub 源码构建：
-
-```bash
-git clone https://github.com/YonggangG/interferogram.git
-cd interferogram
-docker build --network=host -t interferogram-flatness:0.1.1 .
-docker run --rm -p 8000:8000 interferogram-flatness:0.1.1
-```
-
 
 ## Windows 从 GitHub 安装源码版
 
