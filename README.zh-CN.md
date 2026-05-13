@@ -33,7 +33,7 @@
 
 ## 诊断图示例
 
-Raw fringe 模式会生成包含 ROI、wavefront map、residual map 和指标的诊断图：
+Raw fringe 模式会生成包含 ROI、wavefront map、residual map 和关键指标的诊断图。默认诊断图会列出 P-V、RMS、Power、Irregularity、Residual RMS，并在适用时同时显示 wavefront / reflection surface 等效单位。
 
 ![诊断图示例](docs/assets/example_diagnostic_report.png)
 
@@ -144,6 +144,29 @@ docker run -d \
   -v iflat_reports:/data/reports \
   -v iflat_uploads:/data/uploads \
   ghcr.io/yonggangg/interferogram:latest
+```
+
+### 从 GitHub Release asset 离线安装 Docker 镜像
+
+如果服务器不能从 GHCR 拉取镜像，可以从 GitHub Release assets 下载 Docker 镜像压缩包：
+
+```bash
+wget https://github.com/YonggangG/interferogram/releases/download/v0.1.1/interferogram-image-0.1.1.tar.gz
+gunzip -c interferogram-image-0.1.1.tar.gz | docker load
+docker run -d \
+  --name interferogram \
+  --restart unless-stopped \
+  -p 8000:8000 \
+  -e IFLAT_RUN_ROOT=/data/reports \
+  -v iflat_reports:/data/reports \
+  -v iflat_uploads:/data/uploads \
+  ghcr.io/yonggangg/interferogram:0.1.1
+```
+
+Release 页面：
+
+```text
+https://github.com/YonggangG/interferogram/releases/tag/v0.1.1
 ```
 
 如果镜像暂时还没生成，可以从 GitHub 源码构建：

@@ -12,7 +12,7 @@ A Python/FastAPI service for estimating flatness parameters from interferogram i
 
 ## Example diagnostic report
 
-The raw-fringe mode generates a diagnostic report with the selected fringe ROI, wavefront map, residual map, and metrics.
+The raw-fringe mode generates a diagnostic report with the selected fringe ROI, wavefront map, residual map, and key metrics. By default, the report image lists P-V, RMS, Power, Irregularity, residual RMS, and both wavefront/surface-equivalent units when applicable.
 
 ![Example diagnostic report](docs/assets/example_diagnostic_report.png)
 
@@ -84,6 +84,29 @@ Open:
 
 ```text
 http://SERVER_IP:8000/docs
+```
+
+### Offline Docker install from GitHub Release asset
+
+If the server cannot pull from GHCR, download the Docker image archive from the GitHub Release assets:
+
+```bash
+wget https://github.com/YonggangG/interferogram/releases/download/v0.1.1/interferogram-image-0.1.1.tar.gz
+gunzip -c interferogram-image-0.1.1.tar.gz | docker load
+docker run -d \
+  --name interferogram \
+  --restart unless-stopped \
+  -p 8000:8000 \
+  -e IFLAT_RUN_ROOT=/data/reports \
+  -v iflat_reports:/data/reports \
+  -v iflat_uploads:/data/uploads \
+  ghcr.io/yonggangg/interferogram:0.1.1
+```
+
+Release page:
+
+```text
+https://github.com/YonggangG/interferogram/releases/tag/v0.1.1
 ```
 
 If the GHCR image is not available yet, build from GitHub source:
