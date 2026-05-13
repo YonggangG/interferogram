@@ -2,116 +2,118 @@
 
 ## Goal
 
-Run the Rectangular Interferogram Flatness Analyzer as a web service in Docker, deployable from Portainer.
+Run Interferogram Flatness Analyzer as a Docker web service, deployable from Portainer.
 
-The service exposes FastAPI endpoints:
+API docs:
 
-- `GET /health`
-- `POST /analyze/raw-fringe`
-- `POST /audit/zygo-screenshot`
-- `GET /runs/{run_id}/{mode}/{filename}`
+```text
+http://SERVER_IP:8000/docs
+```
 
-Interactive API docs are available at:
+Health check:
 
-- `http://SERVER_IP:8000/docs`
+```text
+http://SERVER_IP:8000/health
+```
 
-## Files
+## Published image
 
-- `Dockerfile` — builds the API service image. It intentionally avoids apt packages and uses headless Python dependencies for server compatibility.
-- `.dockerignore` — excludes local venv/data/reports from the image.
-- `docker-compose.yml` — local build + run.
-- `docker-compose.portainer.yml` — Portainer stack template using an existing image.
+GitHub Actions publishes the image to GitHub Container Registry:
 
-## Local build test
+```text
+ghcr.io/yonggangg/interferogram:latest
+ghcr.io/yonggangg/interferogram:0.1.0
+```
+
+If the image is not visible immediately after a release, check the GitHub Actions page for the `Publish Docker image` workflow.
+
+## Run from GHCR on Linux
 
 ```bash
-cd /home/xin/.openclaw/workspace/interferogram-flatness
-docker compose build
-docker compose up -d
-curl http://127.0.0.1:8000/health
-docker compose down
+docker pull ghcr.io/yonggangg/interferogram:latest
+docker run -d \
+  --name interferogram \
+  --restart unless-stopped \
+  -p 8000:8000 \
+  -e IFLAT_RUN_ROOT=/data/reports \
+  -v iflat_reports:/data/reports \
+  -v iflat_uploads:/data/uploads \
+  ghcr.io/yonggangg/interferogram:latest
 ```
 
-Expected health response:
-
-```json
-{"status":"ok"}
-```
-
-## Option A: Portainer deploy from Git repository
-
-Best long-term method.
-
-1. Push this project to a Git repository available to the server.
-2. In Portainer:
-   - Go to **Stacks** → **Add stack**.
-   - Choose **Repository**.
-   - Set repository URL and branch.
-   - Compose path: `docker-compose.yml`.
-   - Deploy the stack.
-3. Open:
-   - `http://SERVER_IP:8000/health`
-   - `http://SERVER_IP:8000/docs`
-
-This option lets Portainer build from the Dockerfile.
-
-## Option B: Build image locally, export, import on server
-
-Useful if the server cannot access the project Git repo.
-
-On build machine:
+## Build from GitHub source on Linux
 
 ```bash
-cd /home/xin/.openclaw/workspace/interferogram-flatness
-docker build -t interferogram-flatness:0.1.0 .
-docker save interferogram-flatness:0.1.0 | gzip > interferogram-flatness-0.1.0.tar.gz
+git clone https://github.com/YonggangG/interferogram.git
+cd interferogram
+docker build --network=host -t interferogram-flatness:0.1.0 .
+docker run --rm -p 8000:8000 interferogram-flatness:0.1.0
 ```
 
-Copy `interferogram-flatness-0.1.0.tar.gz` to the server.
+`--network=host` is optional, but useful on some servers where Docker build DNS is unreliable.
 
-On server:
+## Portainer Stack YAML using GHCR image
 
-```bash
-gunzip -c interferogram-flatness-0.1.0.tar.gz | docker load
-```
-
-Then in Portainer:
+In Portainer:
 
 1. Go to **Stacks** → **Add stack**.
 2. Choose **Web editor**.
-3. Paste contents of `docker-compose.portainer.yml`.
+3. Paste this YAML.
 4. Deploy.
 
-## Option C: Push to private registry
-
-On build machine:
-
-```bash
-docker build -t YOUR_REGISTRY/interferogram-flatness:0.1.0 .
-docker push YOUR_REGISTRY/interferogram-flatness:0.1.0
-```
-
-Then edit Portainer stack image:
-
 ```yaml
-image: YOUR_REGISTRY/interferogram-flatness:0.1.0
+services:
+  interferogram:
+    image: ghcr.io/yonggangg/interferogram:latest
+    container_name: interferogram
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      IFLAT_RUN_ROOT: /data/reports
+    volumes:
+      - iflat_reports:/data/reports
+      - iflat_uploads:/data/uploads
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=3).read()"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  iflat_reports:
+  iflat_uploads:
 ```
 
-## Volumes
+## Portainer Stack from GitHub repository
 
-The container uses persistent volumes:
+If your Portainer instance can access GitHub and build locally:
 
-- `iflat_reports:/data/reports`
-- `iflat_uploads:/data/uploads`
+1. Go to **Stacks** → **Add stack**.
+2. Choose **Repository**.
+3. Use:
 
-`IFLAT_RUN_ROOT=/data/reports` controls where API run outputs are written.
+```text
+Repository URL: https://github.com/YonggangG/interferogram.git
+Branch: main
+Compose path: docker-compose.yml
+```
+
+4. Deploy.
+
+This method builds from the Dockerfile in the repository.
 
 ## API smoke test
 
-After deployment:
-
 ```bash
 curl http://SERVER_IP:8000/health
+```
+
+Expected:
+
+```json
+{"status":"ok"}
 ```
 
 Raw fringe example:
@@ -134,14 +136,9 @@ curl -X POST http://SERVER_IP:8000/audit/zygo-screenshot \
   -F "wavelength_nm=633"
 ```
 
-The JSON response includes generated image URLs such as:
-
-- `/runs/{run_id}/raw_fringe/diagnostic_report_with_metrics.png`
-- `/runs/{run_id}/zygo_screenshot/display_calibrated_map.png`
-
 ## Production notes
 
 - Put the service behind HTTPS/reverse proxy if exposed outside a trusted LAN.
-- Consider adding authentication before internet exposure.
-- Increase container CPU/RAM if batch image processing is slow.
+- Add authentication before internet exposure.
+- Use persistent volumes for `/data/reports` and `/data/uploads`.
 - For production metrology, prefer raw/direct interferogram intensity images over screenshots.

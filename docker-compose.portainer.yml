@@ -1,6 +1,6 @@
 services:
   interferogram-flatness:
-    image: interferogram-flatness:0.1.0
+    image: ghcr.io/yonggangg/interferogram:latest
     container_name: interferogram-flatness
     restart: unless-stopped
     ports:
