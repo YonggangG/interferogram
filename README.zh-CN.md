@@ -267,22 +267,9 @@ docker run -d \
   ghcr.io/yonggangg/interferogram:latest
 ```
 
-### 从 GitHub Release asset 离线安装 Docker 镜像
+### 源码和 Release 兜底方式
 
-如果服务器不能从 GHCR 拉取镜像，可以从 GitHub Release assets 下载 Docker 镜像压缩包：
-
-```bash
-wget https://github.com/YonggangG/interferogram/releases/download/v0.1.1/interferogram-image-0.1.1.tar.gz
-gunzip -c interferogram-image-0.1.1.tar.gz | docker load
-docker run -d \
-  --name interferogram \
-  --restart unless-stopped \
-  -p 8000:8000 \
-  -e IFLAT_RUN_ROOT=/data/reports \
-  -v iflat_reports:/data/reports \
-  -v iflat_uploads:/data/uploads \
-  ghcr.io/yonggangg/interferogram:0.1.1
-```
+GitHub Release 提供每个版本的源码归档。较大的 Docker 镜像压缩包不再作为 Release asset 上传；预构建镜像请使用 GHCR，如果不能拉取 GHCR，则从源码本地构建。
 
 Release 页面：
 
@@ -290,7 +277,7 @@ Release 页面：
 https://github.com/YonggangG/interferogram/releases/tag/v0.1.1
 ```
 
-如果镜像暂时还没生成，可以从 GitHub 源码构建：
+从 GitHub 源码构建：
 
 ```bash
 git clone https://github.com/YonggangG/interferogram.git

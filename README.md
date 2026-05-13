@@ -102,22 +102,9 @@ Open:
 http://SERVER_IP:8000/docs
 ```
 
-### Offline Docker install from GitHub Release asset
+### Source and release fallback
 
-If the server cannot pull from GHCR, download the Docker image archive from the GitHub Release assets:
-
-```bash
-wget https://github.com/YonggangG/interferogram/releases/download/v0.1.1/interferogram-image-0.1.1.tar.gz
-gunzip -c interferogram-image-0.1.1.tar.gz | docker load
-docker run -d \
-  --name interferogram \
-  --restart unless-stopped \
-  -p 8000:8000 \
-  -e IFLAT_RUN_ROOT=/data/reports \
-  -v iflat_reports:/data/reports \
-  -v iflat_uploads:/data/uploads \
-  ghcr.io/yonggangg/interferogram:0.1.1
-```
+GitHub Releases provide the source archive for each version. Large Docker image archives are not attached as Release assets; use GHCR for prebuilt images, or build from source when GHCR is unavailable.
 
 Release page:
 
@@ -125,7 +112,7 @@ Release page:
 https://github.com/YonggangG/interferogram/releases/tag/v0.1.1
 ```
 
-If the GHCR image is not available yet, build from GitHub source:
+To build from GitHub source:
 
 ```bash
 git clone https://github.com/YonggangG/interferogram.git
