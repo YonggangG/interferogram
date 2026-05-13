@@ -242,6 +242,113 @@ iflat zygo-screenshot path/to/Zygo0.png \
   --out reports/example_zygo
 ```
 
+
+---
+
+## Use the API on Windows to process a fringe image
+
+After the Windows service is running and `http://127.0.0.1:8000` is accessible, you can process a fringe image either from the browser API page or from PowerShell.
+
+### Method 1: Use Swagger UI in the browser
+
+1. Open:
+
+   ```text
+   http://127.0.0.1:8000/docs
+   ```
+
+2. Find:
+
+   ```text
+   POST /analyze/raw-fringe
+   ```
+
+3. Click **Try it out**.
+4. Upload the fringe image in `file`.
+5. Fill `bbox`, for example:
+
+   ```text
+   108,116,208,199
+   ```
+
+6. Fill `wavelength_nm`, for example:
+
+   ```text
+   633
+   ```
+
+7. Set `values_are` to:
+
+   ```text
+   wavefront_error
+   ```
+
+8. Click **Execute**.
+
+The response JSON includes metrics such as P-V, RMS, Power, Irregularity, and a diagnostic report image path such as `report_url`.
+
+### Method 2: Call the API from PowerShell
+
+Assume the image is:
+
+```text
+C:\Users\YourName\Desktop\fringe.jpg
+```
+
+Run:
+
+```powershell
+curl.exe -X POST http://127.0.0.1:8000/analyze/raw-fringe `
+  -F "file=@C:\Users\YourName\Desktop\fringe.jpg" `
+  -F "bbox=108,116,208,199" `
+  -F "wavelength_nm=633" `
+  -F "values_are=wavefront_error"
+```
+
+If this is a reflective flat-mirror test, the response includes both wavefront error and reflection surface-equivalent error. The reflection surface error is usually half of the wavefront error.
+
+### How to choose `bbox`
+
+`bbox` is the pixel coordinate rectangle for the useful fringe aperture:
+
+```text
+x1,y1,x2,y2
+```
+
+Example:
+
+```text
+108,116,208,199
+```
+
+This means:
+
+- upper-left corner: `x=108, y=116`
+- lower-right corner: `x=208, y=199`
+
+If `bbox` is omitted, the program uses a default center crop, but manual `bbox` is usually more accurate.
+
+Use Windows Paint, ImageJ, Python, or any image viewer to identify the square/rectangular fringe region coordinates.
+
+### How to open the diagnostic report
+
+The API response contains a field similar to:
+
+```json
+{
+  "pv_after_tilt_waves": 0.466,
+  "rms_after_tilt_waves": 0.096,
+  "irregularity_after_tilt_power_waves": 0.392,
+  "report_url": "/runs/.../raw_fringe/diagnostic_report_with_metrics.png"
+}
+```
+
+Append `report_url` to the local service URL:
+
+```text
+http://127.0.0.1:8000/runs/xxxx/raw_fringe/diagnostic_report_with_metrics.png
+```
+
 ## API endpoints
 
 ### `POST /analyze/raw-fringe`

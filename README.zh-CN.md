@@ -80,6 +80,111 @@ iflat zygo-screenshot path/to/Zygo0.png \
   --out reports/example_zygo
 ```
 
+
+## Windows 上如何用 API 处理 Fringe 图片
+
+Windows 安装完成并能访问 `http://127.0.0.1:8000` 后，可以直接用 FastAPI 的网页接口或 PowerShell 调用 raw/direct fringe mode。
+
+### 方法 1：用 Swagger UI 网页操作
+
+1. 打开浏览器：
+
+   ```text
+   http://127.0.0.1:8000/docs
+   ```
+
+2. 找到：
+
+   ```text
+   POST /analyze/raw-fringe
+   ```
+
+3. 点击 **Try it out**。
+4. 上传 fringe 图片到 `file`。
+5. 填写 `bbox`，例如：
+
+   ```text
+   108,116,208,199
+   ```
+
+6. 填写 `wavelength_nm`，例如：
+
+   ```text
+   633
+   ```
+
+7. `values_are` 可填：
+
+   ```text
+   wavefront_error
+   ```
+
+8. 点击 **Execute**。
+
+返回 JSON 里会包含 P-V、RMS、Power、Irregularity，以及诊断图地址 `report_url`。
+
+### 方法 2：PowerShell 调用 API
+
+假设图片路径是：
+
+```text
+C:\Users\YourName\Desktop\fringe.jpg
+```
+
+PowerShell 中运行：
+
+```powershell
+curl.exe -X POST http://127.0.0.1:8000/analyze/raw-fringe `
+  -F "file=@C:\Users\YourName\Desktop\fringe.jpg" `
+  -F "bbox=108,116,208,199" `
+  -F "wavelength_nm=633" `
+  -F "values_are=wavefront_error"
+```
+
+如果是反射式平面镜测试，返回结果中会同时给出 wavefront error 和 reflection surface-equivalent error。surface error 通常是 wavefront error 的一半。
+
+### bbox 怎么填？
+
+`bbox` 是条纹有效区域的像素坐标，格式是：
+
+```text
+x1,y1,x2,y2
+```
+
+例如：
+
+```text
+108,116,208,199
+```
+
+表示：
+
+- 左上角：`x=108, y=116`
+- 右下角：`x=208, y=199`
+
+如果不填 `bbox`，程序会默认裁中间区域，但准确度通常不如手动指定。
+
+建议先用 Windows Paint、ImageJ、Python 或任意图片查看工具确认方形/矩形条纹区域坐标。
+
+### 如何打开诊断图？
+
+API 返回 JSON 中通常会有类似字段：
+
+```json
+{
+  "pv_after_tilt_waves": 0.466,
+  "rms_after_tilt_waves": 0.096,
+  "irregularity_after_tilt_power_waves": 0.392,
+  "report_url": "/runs/.../raw_fringe/diagnostic_report_with_metrics.png"
+}
+```
+
+把 `report_url` 拼到本机服务地址后面即可打开诊断图：
+
+```text
+http://127.0.0.1:8000/runs/xxxx/raw_fringe/diagnostic_report_with_metrics.png
+```
+
 ## API 接口
 
 ### `POST /analyze/raw-fringe`
