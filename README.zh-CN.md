@@ -37,6 +37,22 @@ Raw fringe 模式会生成包含 ROI、wavefront map、residual map 和关键指
 
 ![诊断图示例](docs/assets/example_diagnostic_report.png)
 
+这个诊断图对应的原始 fringe 输入图也放在仓库里：
+
+![原始 fringe 输入图](docs/assets/example_fringe_input.jpg)
+
+如果要复现 README 里的结果，请上传这张原始 fringe 图，不要上传诊断报告图本身：
+
+```bash
+iflat raw-fringe docs/assets/example_fringe_input.jpg   --bbox 108,116,208,199   --wavelength-nm 633   --out reports/example_raw
+```
+
+API 调用：
+
+```bash
+curl -X POST http://127.0.0.1:8000/analyze/raw-fringe   -F "file=@docs/assets/example_fringe_input.jpg"   -F "bbox=108,116,208,199"   -F "wavelength_nm=633"   -F "values_are=wavefront_error"
+```
+
 ## 快速启动：Python 源码模式
 
 ```bash

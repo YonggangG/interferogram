@@ -16,6 +16,22 @@ The raw-fringe mode generates a diagnostic report with the selected fringe ROI, 
 
 ![Example diagnostic report](docs/assets/example_diagnostic_report.png)
 
+The raw input image used for this example is included here:
+
+![Example raw fringe input](docs/assets/example_fringe_input.jpg)
+
+To reproduce this report, use the raw input image above, not the diagnostic report image itself:
+
+```bash
+iflat raw-fringe docs/assets/example_fringe_input.jpg   --bbox 108,116,208,199   --wavelength-nm 633   --out reports/example_raw
+```
+
+Or through the API:
+
+```bash
+curl -X POST http://127.0.0.1:8000/analyze/raw-fringe   -F "file=@docs/assets/example_fringe_input.jpg"   -F "bbox=108,116,208,199"   -F "wavelength_nm=633"   -F "values_are=wavefront_error"
+```
+
 ---
 
 ## 1. Install the Linux source version from GitHub
