@@ -155,6 +155,47 @@ docker build --network=host -t interferogram-flatness:0.1.1 .
 docker run --rm -p 8000:8000 interferogram-flatness:0.1.1
 ```
 
+
+## Windows 从 GitHub 安装源码版
+
+适合在 Windows 电脑上直接运行 Web Service，不使用 Docker。
+
+前置要求：
+
+- Windows 10/11
+- Python 3.12 推荐
+- Git for Windows 推荐
+
+安装 Python 时请勾选：
+
+```text
+Add python.exe to PATH
+```
+
+打开 PowerShell：
+
+```powershell
+git clone https://github.com/YonggangG/interferogram.git
+cd interferogram
+powershell -ExecutionPolicy Bypass -File scripts\windows\setup_windows.ps1
+```
+
+启动服务：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\windows\start_api.ps1
+```
+
+浏览器打开：
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+更多说明见：
+
+[`docs/windows_run_guide.md`](docs/windows_run_guide.md)
+
 ## Portainer Stack YAML
 
 在 Portainer → Stacks → Add stack → Web editor，粘贴：

@@ -95,9 +95,67 @@ docker build --network=host -t interferogram-flatness:0.1.1 .
 docker run --rm -p 8000:8000 interferogram-flatness:0.1.1
 ```
 
+
 ---
 
-## 3. Portainer stack YAML from GitHub deployment
+## 3. Install the Windows version from GitHub
+
+Use this when you want to run the service directly on a Windows PC without Docker.
+
+### Prerequisites
+
+- Windows 10/11
+- Python 3.12 recommended
+- Git for Windows recommended
+
+During Python installation, enable:
+
+```text
+Add python.exe to PATH
+```
+
+### Install from GitHub
+
+Open PowerShell:
+
+```powershell
+git clone https://github.com/YonggangG/interferogram.git
+cd interferogram
+powershell -ExecutionPolicy Bypass -File scripts\windows\setup_windows.ps1
+```
+
+### Start the Windows web service
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\windows\start_api.ps1
+```
+
+Open:
+
+```text
+http://127.0.0.1:8000/docs
+```
+
+### Windows CLI examples
+
+Raw/direct fringe mode:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\windows\run_raw_fringe_example.ps1
+```
+
+Zygo screenshot audit mode:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\windows\run_zygo_screenshot_example.ps1
+```
+
+More details:
+
+[`docs/windows_run_guide.md`](docs/windows_run_guide.md)
+---
+
+## 4. Portainer stack YAML from GitHub deployment
 
 In Portainer:
 
