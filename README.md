@@ -63,7 +63,7 @@ A GitHub Actions workflow publishes the container image to GitHub Container Regi
 
 ```text
 ghcr.io/yonggangg/interferogram:latest
-ghcr.io/yonggangg/interferogram:0.1.0
+ghcr.io/yonggangg/interferogram:0.1.1
 ```
 
 Pull and run:
@@ -91,8 +91,8 @@ If the GHCR image is not available yet, build from GitHub source:
 ```bash
 git clone https://github.com/YonggangG/interferogram.git
 cd interferogram
-docker build --network=host -t interferogram-flatness:0.1.0 .
-docker run --rm -p 8000:8000 interferogram-flatness:0.1.0
+docker build --network=host -t interferogram-flatness:0.1.1 .
+docker run --rm -p 8000:8000 interferogram-flatness:0.1.1
 ```
 
 ---

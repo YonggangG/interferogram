@@ -22,7 +22,7 @@ GitHub Actions publishes the image to GitHub Container Registry:
 
 ```text
 ghcr.io/yonggangg/interferogram:latest
-ghcr.io/yonggangg/interferogram:0.1.0
+ghcr.io/yonggangg/interferogram:0.1.1
 ```
 
 If the image is not visible immediately after a release, check the GitHub Actions page for the `Publish Docker image` workflow.
@@ -46,8 +46,8 @@ docker run -d \
 ```bash
 git clone https://github.com/YonggangG/interferogram.git
 cd interferogram
-docker build --network=host -t interferogram-flatness:0.1.0 .
-docker run --rm -p 8000:8000 interferogram-flatness:0.1.0
+docker build --network=host -t interferogram-flatness:0.1.1 .
+docker run --rm -p 8000:8000 interferogram-flatness:0.1.1
 ```
 
 `--network=host` is optional, but useful on some servers where Docker build DNS is unreliable.

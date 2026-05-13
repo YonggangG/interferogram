@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    image: interferogram-flatness:0.1.0
+    image: interferogram-flatness:0.1.1
     container_name: interferogram-flatness
     restart: unless-stopped
     ports:
